@@ -10,10 +10,18 @@ import { msalConfig } from "./auth/msalConfig";
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-    <React.StrictMode>
-        <MsalProvider instance={msalInstance}>
-            <App />
-        </MsalProvider>
-    </React.StrictMode>
-);
+async function startApp() {
+    await msalInstance.initialize();
+
+    ReactDOM.createRoot(
+        document.getElementById("root")
+    ).render(
+        <React.StrictMode>
+            <MsalProvider instance={msalInstance}>
+                <App />
+            </MsalProvider>
+        </React.StrictMode>
+    );
+}
+
+startApp();
