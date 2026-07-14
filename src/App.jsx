@@ -1,14 +1,14 @@
-console.log(
-    "VITE_FUNCTION_URL:",
-    import.meta.env.VITE_FUNCTION_URL
-);
-
 import { useState } from "react";
 import { useMsal } from "@azure/msal-react";
 import ReactMarkdown from "react-markdown";
 
-const FUNCTION_URL =
-    import.meta.env.VITE_FUNCTION_URL;
+const FUNCTION_URL = import.meta.env.VITE_FUNCTION_URL;
+
+console.log("========== APP START ==========");
+console.log("import.meta.env:", import.meta.env);
+console.log("VITE_FUNCTION_URL:", import.meta.env.VITE_FUNCTION_URL);
+console.log("FUNCTION_URL:", FUNCTION_URL);
+
 function App() {
     const { accounts, instance } = useMsal();
 
@@ -17,7 +17,7 @@ function App() {
         {
             role: "assistant",
             content:
-                "Welkom bij de FéjuAI Assistant. Stel een vraag over klanten, contracten, contactpersonen of open tickets in Autotask."
+                "Welkom bij de Féju AI Assistant. Stel een vraag over klanten, contracten, contactpersonen of open tickets in Autotask."
         }
     ]);
     const [loading, setLoading] = useState(false);
@@ -35,6 +35,10 @@ function App() {
             return;
         }
 
+        console.log("========== QUESTION ==========");
+        console.log("Question:", trimmedQuestion);
+        console.log("FUNCTION_URL before fetch:", FUNCTION_URL);
+
         const userMessage = {
             role: "user",
             content: trimmedQuestion
@@ -48,41 +52,61 @@ function App() {
         setQuestion("");
         setLoading(true);
 
-     try {
+        try {
+            if (!FUNCTION_URL) {
+                console.error("FUNCTION_URL is undefined or empty.");
 
-    console.log("========== DEBUG ==========");
-    console.log("FUNCTION_URL:", FUNCTION_URL);
-    console.log("Question:", trimmedQuestion);
+                throw new Error(
+                    "FUNCTION_URL is undefined. Controleer of VITE_FUNCTION_URL correct is ingesteld tijdens de Azure Static Web App build."
+                );
+            }
 
-    const response = await fetch(
-        FUNCTION_URL,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                question: trimmedQuestion
-            })
-        }
-    );
+            console.log("========== FETCH START ==========");
+            console.log("Calling URL:", FUNCTION_URL);
 
-    console.log("Response status:", response.status);
-    console.log("Response ok:", response.ok);
-    console.log("Response url:", response.url);
+            const response = await fetch(
+                FUNCTION_URL,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        question: trimmedQuestion
+                    })
+                }
+            );
 
-    const responseText = await response.text();
+            console.log("========== FETCH RESPONSE ==========");
+            console.log("Response status:", response.status);
+            console.log("Response ok:", response.ok);
+            console.log("Response url:", response.url);
+            console.log("Response type:", response.type);
+            console.log("Response redirected:", response.redirected);
 
-    console.log("Response body:");
-    console.log(responseText);
+            const responseText = await response.text();
 
-    if (!response.ok) {
-        throw new Error(
-            `Azure Function gaf status ${response.status}: ${responseText}`
-        );
-    }
+            console.log("Response body:");
+            console.log(responseText);
 
-    const data = JSON.parse(responseText);
+            if (!response.ok) {
+                throw new Error(
+                    `Azure Function gaf status ${response.status}: ${responseText}`
+                );
+            }
+
+            let data;
+
+            try {
+                data = JSON.parse(responseText);
+            } catch (jsonError) {
+                console.error("Kon response niet als JSON parsen:", jsonError);
+
+                throw new Error(
+                    "De Azure Function gaf geen geldige JSON terug: " +
+                    responseText
+                );
+            }
 
             const assistantMessage = {
                 role: "assistant",
@@ -96,13 +120,17 @@ function App() {
                 assistantMessage
             ]);
         } catch (error) {
+            console.error("========== ERROR ==========");
+            console.error(error);
+
             setMessages((previousMessages) => [
                 ...previousMessages,
                 {
                     role: "assistant",
                     content:
                         "Er ging iets mis bij het ophalen van het antwoord.\n\n" +
-                        `**Foutmelding:** ${error.message}`
+                        `**Foutmelding:** ${error.message}\n\n` +
+                        `**Debug:** FUNCTION_URL = ${FUNCTION_URL || "undefined"}`
                 }
             ]);
         } finally {
