@@ -43,29 +43,41 @@ function App() {
         setQuestion("");
         setLoading(true);
 
-        try {
-            const response = await fetch(
-                FUNCTION_URL,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        question: trimmedQuestion
-                    })
-                }
-            );
+     try {
 
-            if (!response.ok) {
-                const errorText = await response.text();
+    console.log("========== DEBUG ==========");
+    console.log("FUNCTION_URL:", FUNCTION_URL);
+    console.log("Question:", trimmedQuestion);
 
-                throw new Error(
-                    `Azure Function gaf status ${response.status}: ${errorText}`
-                );
-            }
+    const response = await fetch(
+        FUNCTION_URL,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                question: trimmedQuestion
+            })
+        }
+    );
 
-            const data = await response.json();
+    console.log("Response status:", response.status);
+    console.log("Response ok:", response.ok);
+    console.log("Response url:", response.url);
+
+    const responseText = await response.text();
+
+    console.log("Response body:");
+    console.log(responseText);
+
+    if (!response.ok) {
+        throw new Error(
+            `Azure Function gaf status ${response.status}: ${responseText}`
+        );
+    }
+
+    const data = JSON.parse(responseText);
 
             const assistantMessage = {
                 role: "assistant",
