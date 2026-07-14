@@ -34,19 +34,24 @@ function App() {
         accounts[0] ||
         null;
 
-    const login = async () => {
-        try {
-            await instance.loginPopup(loginRequest);
-        } catch (error) {
-            console.error("Login mislukt:", error);
-        }
-    };
+  const login = async () => {
+    try {
+        await instance.loginRedirect(loginRequest);
+    } catch (error) {
+        console.error("Login mislukt:", error);
+    }
+};
 
-    const logout = async () => {
-        await instance.logoutPopup({
-            account: currentUser
+const logout = async () => {
+    try {
+        await instance.logoutRedirect({
+            account: currentUser,
+            postLogoutRedirectUri: window.location.origin
         });
-    };
+    } catch (error) {
+        console.error("Logout mislukt:", error);
+    }
+};
 
     const askQuestion = async () => {
         const trimmedQuestion = question.trim();
