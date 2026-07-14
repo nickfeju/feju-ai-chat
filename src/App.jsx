@@ -1,3 +1,8 @@
+console.log(
+    "VITE_FUNCTION_URL:",
+    import.meta.env.VITE_FUNCTION_URL
+);
+
 import { useState } from "react";
 import { useMsal } from "@azure/msal-react";
 import ReactMarkdown from "react-markdown";
