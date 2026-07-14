@@ -18,7 +18,7 @@ function App() {
         {
             role: "assistant",
             content:
-                "Welkom bij de Féju AI Assistant. Stel een vraag over klanten, contracten, contactpersonen of open tickets in Autotask."
+                "Welkom bij de Féju AI Assistant. Stel vragen over klanten, contracten, services, Microsoft licenties, contactpersonen en open tickets in Autotask."
         }
     ]);
     const [loading, setLoading] = useState(false);
@@ -34,24 +34,24 @@ function App() {
         accounts[0] ||
         null;
 
-  const login = async () => {
-    try {
-        await instance.loginRedirect(loginRequest);
-    } catch (error) {
-        console.error("Login mislukt:", error);
-    }
-};
+    const login = async () => {
+        try {
+            await instance.loginRedirect(loginRequest);
+        } catch (error) {
+            console.error("Login mislukt:", error);
+        }
+    };
 
-const logout = async () => {
-    try {
-        await instance.logoutRedirect({
-            account: currentUser,
-            postLogoutRedirectUri: window.location.origin
-        });
-    } catch (error) {
-        console.error("Logout mislukt:", error);
-    }
-};
+    const logout = async () => {
+        try {
+            await instance.logoutRedirect({
+                account: currentUser,
+                postLogoutRedirectUri: window.location.origin
+            });
+        } catch (error) {
+            console.error("Logout mislukt:", error);
+        }
+    };
 
     const askQuestion = async () => {
         const trimmedQuestion = question.trim();
@@ -173,11 +173,17 @@ const logout = async () => {
             <FullScreenShell>
                 <LoginCard>
                     <LogoCircle />
+
                     <h1 style={styles.loginTitle}>
                         Féju AI Assistant
                     </h1>
+
                     <p style={styles.loginSubtitle}>
                         Aanmelden wordt verwerkt...
+                    </p>
+
+                    <p style={styles.securityNote}>
+                        MSAL-status: {String(inProgress)}
                     </p>
                 </LoginCard>
             </FullScreenShell>
@@ -260,7 +266,7 @@ const logout = async () => {
                                 </h2>
 
                                 <p style={styles.chatSubtitle}>
-                                    Stel vragen over klanten, tickets, contracten en contactpersonen.
+                                    Stel vragen over klanten, tickets, contracten, services, licenties en contactpersonen.
                                 </p>
                             </div>
 
@@ -318,6 +324,7 @@ const logout = async () => {
                                 <div style={styles.loadingRow}>
                                     <div style={styles.loadingBubble}>
                                         <strong>Féju AI</strong>
+
                                         <div style={styles.loadingText}>
                                             Antwoord wordt opgehaald...
                                         </div>
@@ -334,7 +341,7 @@ const logout = async () => {
                                     setQuestion(event.target.value)
                                 }
                                 onKeyDown={handleKeyDown}
-                                placeholder="Bijvoorbeeld: Welke contracten heeft Hemubo?"
+                                placeholder="Bijvoorbeeld: Welke diensten nemen ze af bij Hemubo?"
                                 style={styles.textarea}
                             />
 
@@ -380,6 +387,24 @@ const logout = async () => {
                             />
 
                             <QuickPromptButton
+                                label="🛠️ Services"
+                                prompt="Welke diensten nemen ze af bij Hemubo?"
+                                onClick={useQuickPrompt}
+                            />
+
+                            <QuickPromptButton
+                                label="🛡️ Microsoft licenties"
+                                prompt="Welke Microsoft licenties heeft Hemubo?"
+                                onClick={useQuickPrompt}
+                            />
+
+                            <QuickPromptButton
+                                label="⚙️ Managed services"
+                                prompt="Welke managed services nemen ze af bij Hemubo?"
+                                onClick={useQuickPrompt}
+                            />
+
+                            <QuickPromptButton
                                 label="🎫 Open tickets"
                                 prompt="Welke open tickets heeft Hemubo?"
                                 onClick={useQuickPrompt}
@@ -406,6 +431,8 @@ const logout = async () => {
                             <ul style={styles.helpList}>
                                 <li>Klantinformatie ophalen</li>
                                 <li>Contracten samenvatten</li>
+                                <li>Services en licenties bekijken</li>
+                                <li>Managed services analyseren</li>
                                 <li>Open tickets bekijken</li>
                                 <li>Contactpersonen tonen</li>
                                 <li>Klantbriefings maken</li>
