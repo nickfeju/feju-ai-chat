@@ -1,13 +1,65 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
 import { InteractionStatus } from "@azure/msal-browser";
 import ReactMarkdown from "react-markdown";
+import fejuLogo from "./Logo-Feju-2020-kopie.png";
 
 const FUNCTION_URL = import.meta.env.VITE_FUNCTION_URL;
 
 const loginRequest = {
     scopes: ["User.Read"]
 };
+
+const quickActions = [
+    {
+        icon: "🏢",
+        title: "Klantoverzicht",
+        description: "Basisgegevens, SLA en bijzonderheden",
+        prompt: "Geef me een klantoverzicht van Hemubo"
+    },
+    {
+        icon: "📄",
+        title: "Contracten",
+        description: "Contracten en afspraken samenvatten",
+        prompt: "Welke contracten heeft Hemubo?"
+    },
+    {
+        icon: "🛠️",
+        title: "Services",
+        description: "Afgenomen diensten inzichtelijk maken",
+        prompt: "Welke diensten nemen ze af bij Hemubo?"
+    },
+    {
+        icon: "🛡️",
+        title: "Microsoft licenties",
+        description: "Licenties en aantallen bekijken",
+        prompt: "Welke Microsoft licenties heeft Hemubo?"
+    },
+    {
+        icon: "⚙️",
+        title: "Managed services",
+        description: "Beheerafspraken analyseren",
+        prompt: "Welke managed services nemen ze af bij Hemubo?"
+    },
+    {
+        icon: "🎫",
+        title: "Open tickets",
+        description: "Lopende tickets en aandachtspunten",
+        prompt: "Welke open tickets heeft Hemubo?"
+    },
+    {
+        icon: "👥",
+        title: "Contactpersonen",
+        description: "Belangrijke contacten bij de klant",
+        prompt: "Wie zijn de contactpersonen van Hemubo?"
+    },
+    {
+        icon: "📋",
+        title: "Klantbriefing",
+        description: "Voorbereiding voor klantgesprek",
+        prompt: "Maak een klantbriefing voor Hemubo"
+    }
+];
 
 function App() {
     const { accounts, instance, inProgress } = useMsal();
@@ -18,7 +70,7 @@ function App() {
         {
             role: "assistant",
             content:
-                "Welkom bij de Féju AI Assistant. Stel vragen over klanten, contracten, services, Microsoft licenties, contactpersonen en open tickets in Autotask."
+                "Goedemorgen, welkom bij FéjuAI. Ik help je met klantinformatie, contracten, services, Microsoft licenties, contactpersonen en open tickets uit Autotask. Waar kan ik mee helpen?"
         }
     ]);
     const [loading, setLoading] = useState(false);
@@ -33,6 +85,29 @@ function App() {
         instance.getActiveAccount() ||
         accounts[0] ||
         null;
+
+    const displayName = useMemo(() => {
+        if (!currentUser) return "Féju collega";
+
+        if (currentUser.name) {
+            return currentUser.name.split("|")[0].trim();
+        }
+
+        if (currentUser.username) {
+            return currentUser.username.split("@")[0];
+        }
+
+        return "Féju collega";
+    }, [currentUser]);
+
+    const greeting = useMemo(() => {
+        const hour = new Date().getHours();
+
+        if (hour < 12) return "Goedemorgen";
+        if (hour < 18) return "Goedemiddag";
+
+        return "Goedenavond";
+    }, []);
 
     const login = async () => {
         try {
@@ -66,7 +141,7 @@ function App() {
                 {
                     role: "assistant",
                     content:
-                        "Je bent niet aangemeld. Meld je eerst aan met je Féju-account."
+                        "Je bent nog niet aangemeld. Meld je eerst aan met je Féju-account, dan help ik je verder."
                 }
             ]);
 
@@ -89,7 +164,7 @@ function App() {
         try {
             if (!FUNCTION_URL) {
                 throw new Error(
-                    "VITE_FUNCTION_URL ontbreekt. Controleer de GitHub Secret en de Azure Static Web Apps workflow."
+                    "VITE_FUNCTION_URL ontbreekt. Controleer je GitHub Secret en de Azure Static Web Apps workflow."
                 );
             }
 
@@ -133,7 +208,7 @@ function App() {
                 role: "assistant",
                 content:
                     data.answer ||
-                    "Ik heb geen antwoord ontvangen van de Féju AI Assistant."
+                    "Ik heb geen antwoord ontvangen van FéjuAI."
             };
 
             setMessages((previousMessages) => [
@@ -171,15 +246,17 @@ function App() {
     if (inProgress !== InteractionStatus.None) {
         return (
             <FullScreenShell>
+                <BrandStyle />
+
                 <LoginCard>
-                    <LogoCircle />
+                    <LogoMark />
 
                     <h1 style={styles.loginTitle}>
-                        Féju AI Assistant
+                        FéjuAI
                     </h1>
 
                     <p style={styles.loginSubtitle}>
-                        Aanmelden wordt verwerkt...
+                        Je aanmelding wordt verwerkt.
                     </p>
 
                     <p style={styles.securityNote}>
@@ -193,19 +270,23 @@ function App() {
     if (!isAuthenticated || !currentUser) {
         return (
             <FullScreenShell>
+                <BrandStyle />
+
                 <LoginCard>
-                    <LogoCircle />
+                    <LogoMark />
 
                     <h1 style={styles.loginTitle}>
-                        Féju AI Assistant
+                        Welkom bij FéjuAI
                     </h1>
 
                     <p style={styles.loginSubtitle}>
-                        Meld je aan met je Féju-account om toegang te krijgen tot de interne AI Assistant.
+                        Je digitale Féju-collega voor klantinformatie,
+                        contracten, tickets, services en licenties uit Autotask.
                     </p>
 
                     <button
                         onClick={login}
+                        className="primary-button"
                         style={styles.loginButton}
                     >
                         Inloggen met Microsoft
@@ -221,21 +302,71 @@ function App() {
 
     return (
         <div style={styles.page}>
+            <BrandStyle />
+
+            <div style={styles.topBar}>
+                <div style={styles.topBarInner}>
+                    <div style={styles.miniNav}>
+                        <span>Diensten</span>
+                        <span>Klantverhalen</span>
+                        <span>Over ons</span>
+                    </div>
+
+                    <LogoWordmark />
+
+                    <div style={styles.miniNav}>
+                        <span>Nieuws en blogs</span>
+                        <span>Werken bij</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style={styles.brandBand} />
+
             <div style={styles.container}>
-                <header style={styles.header}>
-                    <div>
+                <section style={styles.heroCard}>
+                    <div style={styles.heroLeft}>
                         <div style={styles.brandRow}>
-                            <LogoCircle />
+                            <LogoMark />
 
                             <div>
-                                <h1 style={styles.title}>
-                                    Féju AI Assistant
-                                </h1>
+                                <div style={styles.eyebrow}>
+                                    Verbonden met Autotask
+                                </div>
 
-                                <p style={styles.subtitle}>
-                                    Vraag direct informatie op uit Autotask
-                                </p>
+                                <h1 style={styles.title}>
+                                    FéjuAI
+                                </h1>
                             </div>
+                        </div>
+
+                        <p style={styles.heroText}>
+                            {greeting} {displayName}. Stel direct vragen over klanten,
+                            contracten, tickets, Microsoft licenties en contactpersonen.
+                        </p>
+
+                        <div style={styles.heroActions}>
+                            <button
+                                type="button"
+                                className="primary-button"
+                                style={styles.heroPrimaryButton}
+                                onClick={() =>
+                                    setQuestion("Maak een klantbriefing voor Hemubo")
+                                }
+                            >
+                                Maak klantbriefing
+                            </button>
+
+                            <button
+                                type="button"
+                                className="secondary-button"
+                                style={styles.heroSecondaryButton}
+                                onClick={() =>
+                                    setQuestion("Welke open tickets heeft Hemubo?")
+                                }
+                            >
+                                Bekijk open tickets
+                            </button>
                         </div>
                     </div>
 
@@ -250,28 +381,35 @@ function App() {
 
                         <button
                             onClick={logout}
+                            className="secondary-button"
                             style={styles.logoutButton}
                         >
                             Uitloggen
                         </button>
                     </div>
-                </header>
+                </section>
 
-                <main style={styles.main}>
+                <main style={styles.main} className="main-grid">
                     <section style={styles.chatPanel}>
                         <div style={styles.chatHeader}>
                             <div>
-                                <h2 style={styles.chatTitle}>
+                                <div style={styles.sectionKicker}>
                                     Chat
+                                </div>
+
+                                <h2 style={styles.chatTitle}>
+                                    Waar kan ik je mee helpen?
                                 </h2>
 
                                 <p style={styles.chatSubtitle}>
-                                    Stel vragen over klanten, tickets, contracten, services, licenties en contactpersonen.
+                                    Vraag bijvoorbeeld naar klantinformatie, contracten,
+                                    diensten, licenties, contactpersonen of openstaande tickets.
                                 </p>
                             </div>
 
                             <div style={styles.liveBadge}>
-                                Live Autotask
+                                <span style={styles.statusDot} />
+                                Live Féju Data
                             </div>
                         </div>
 
@@ -298,10 +436,18 @@ function App() {
                                                     : styles.assistantBubble)
                                             }}
                                         >
-                                            <div style={styles.messageLabel}>
-                                                {isUser
-                                                    ? "Jij"
-                                                    : "Féju AI"}
+                                            <div style={styles.messageMeta}>
+                                                {!isUser && (
+                                                    <span style={styles.smallAvatar}>
+                                                        fé
+                                                    </span>
+                                                )}
+
+                                                <span style={styles.messageLabel}>
+                                                    {isUser
+                                                        ? "Jij"
+                                                        : "FéjuAI"}
+                                                </span>
                                             </div>
 
                                             {isUser ? (
@@ -323,10 +469,18 @@ function App() {
                             {loading && (
                                 <div style={styles.loadingRow}>
                                     <div style={styles.loadingBubble}>
-                                        <strong>Féju AI</strong>
+                                        <div style={styles.messageMeta}>
+                                            <span style={styles.smallAvatar}>
+                                                fé
+                                            </span>
+
+                                            <strong>
+                                                FéjuAI
+                                            </strong>
+                                        </div>
 
                                         <div style={styles.loadingText}>
-                                            Antwoord wordt opgehaald...
+                                            Ik haal de informatie voor je op...
                                         </div>
                                     </div>
                                 </div>
@@ -341,18 +495,19 @@ function App() {
                                     setQuestion(event.target.value)
                                 }
                                 onKeyDown={handleKeyDown}
-                                placeholder="Bijvoorbeeld: Welke diensten nemen ze af bij Hemubo?"
+                                placeholder="Bijvoorbeeld: geef me een overzicht van klant Paridaans"
                                 style={styles.textarea}
                             />
 
                             <div style={styles.inputFooter}>
                                 <div style={styles.inputHint}>
-                                    Tip: druk op Enter om te versturen, Shift + Enter voor een nieuwe regel.
+                                    Enter = versturen · Shift + Enter = nieuwe regel
                                 </div>
 
                                 <button
                                     onClick={askQuestion}
                                     disabled={loading || !question.trim()}
+                                    className="primary-button"
                                     style={{
                                         ...styles.askButton,
                                         ...(loading || !question.trim()
@@ -370,62 +525,39 @@ function App() {
 
                     <aside style={styles.sidebar}>
                         <div style={styles.card}>
-                            <h3 style={styles.cardTitle}>
-                                Snelle acties
-                            </h3>
+                            <div style={styles.cardHeader}>
+                                <div>
+                                    <div style={styles.sectionKicker}>
+                                        Snel starten
+                                    </div>
 
-                            <QuickPromptButton
-                                label="🏢 Klantoverzicht"
-                                prompt="Vertel iets over klant Hemubo"
-                                onClick={useQuickPrompt}
-                            />
+                                    <h3 style={styles.cardTitle}>
+                                        Snelle acties
+                                    </h3>
+                                </div>
+                            </div>
 
-                            <QuickPromptButton
-                                label="📄 Contracten"
-                                prompt="Welke contracten heeft Hemubo?"
-                                onClick={useQuickPrompt}
-                            />
-
-                            <QuickPromptButton
-                                label="🛠️ Services"
-                                prompt="Welke diensten nemen ze af bij Hemubo?"
-                                onClick={useQuickPrompt}
-                            />
-
-                            <QuickPromptButton
-                                label="🛡️ Microsoft licenties"
-                                prompt="Welke Microsoft licenties heeft Hemubo?"
-                                onClick={useQuickPrompt}
-                            />
-
-                            <QuickPromptButton
-                                label="⚙️ Managed services"
-                                prompt="Welke managed services nemen ze af bij Hemubo?"
-                                onClick={useQuickPrompt}
-                            />
-
-                            <QuickPromptButton
-                                label="🎫 Open tickets"
-                                prompt="Welke open tickets heeft Hemubo?"
-                                onClick={useQuickPrompt}
-                            />
-
-                            <QuickPromptButton
-                                label="👥 Contactpersonen"
-                                prompt="Wie zijn de contactpersonen van Hemubo?"
-                                onClick={useQuickPrompt}
-                            />
-
-                            <QuickPromptButton
-                                label="📋 Klantbriefing"
-                                prompt="Maak een klantbriefing voor Hemubo"
-                                onClick={useQuickPrompt}
-                            />
+                            <div style={styles.quickGrid}>
+                                {quickActions.map((action) => (
+                                    <QuickPromptTile
+                                        key={action.title}
+                                        icon={action.icon}
+                                        title={action.title}
+                                        description={action.description}
+                                        prompt={action.prompt}
+                                        onClick={useQuickPrompt}
+                                    />
+                                ))}
+                            </div>
                         </div>
 
                         <div style={styles.greenCard}>
+                            <div style={styles.greenCardEyebrow}>
+                                FéjuAI kan helpen met
+                            </div>
+
                             <h3 style={styles.greenCardTitle}>
-                                Waar kan ik mee helpen?
+                                Minder zoeken, sneller klantinzicht.
                             </h3>
 
                             <ul style={styles.helpList}>
@@ -434,8 +566,7 @@ function App() {
                                 <li>Services en licenties bekijken</li>
                                 <li>Managed services analyseren</li>
                                 <li>Open tickets bekijken</li>
-                                <li>Contactpersonen tonen</li>
-                                <li>Klantbriefings maken</li>
+                                <li>Klantbriefings voorbereiden</li>
                             </ul>
                         </div>
                     </aside>
@@ -461,167 +592,419 @@ function LoginCard({ children }) {
     );
 }
 
-function LogoCircle() {
+function LogoMark() {
     return (
-        <div style={styles.logoCircle}>
-            🤖
+        <div style={styles.logoMark}>
+            <img
+                src={fejuLogo}
+                alt="Féju ICT Groep"
+                style={styles.logoImage}
+            />
         </div>
     );
 }
 
-function QuickPromptButton({ label, prompt, onClick }) {
+function LogoWordmark() {
+    return (
+        <div style={styles.logoWordmark}>
+            <div style={styles.logoText}>
+                féju
+            </div>
+
+            <div style={styles.logoSubText}>
+                ICT GROEP
+            </div>
+        </div>
+    );
+}
+
+function QuickPromptTile({ icon, title, description, prompt, onClick }) {
     return (
         <button
+            type="button"
             onClick={() => onClick(prompt)}
-            style={styles.quickButton}
+            className="quick-tile"
+            style={styles.quickTile}
         >
-            {label}
+            <span style={styles.quickIcon}>
+                {icon}
+            </span>
+
+            <span style={styles.quickContent}>
+                <span style={styles.quickTitle}>
+                    {title}
+                </span>
+
+                <span style={styles.quickDescription}>
+                    {description}
+                </span>
+            </span>
         </button>
     );
 }
+
+function BrandStyle() {
+    return (
+        <style>
+            {`
+                * {
+                    box-sizing: border-box;
+                }
+
+                body {
+                    margin: 0;
+                }
+
+                .primary-button {
+                    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+                }
+
+                .primary-button:hover:not(:disabled) {
+                    transform: translateY(-1px);
+                    box-shadow: 0 16px 30px rgba(136, 163, 27, 0.28);
+                }
+
+                .secondary-button {
+                    transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+                }
+
+                .secondary-button:hover {
+                    background: #f7faf0;
+                    border-color: #9bb31d;
+                    transform: translateY(-1px);
+                }
+
+                .quick-tile {
+                    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+                }
+
+                .quick-tile:hover {
+                    transform: translateY(-2px);
+                    border-color: rgba(151, 175, 30, 0.55) !important;
+                    background: #fbfdf3 !important;
+                    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+                }
+
+                .markdown-body p:first-child {
+                    margin-top: 0;
+                }
+
+                .markdown-body p:last-child {
+                    margin-bottom: 0;
+                }
+
+                .markdown-body ul {
+                    margin-top: 8px;
+                    margin-bottom: 8px;
+                }
+
+                .markdown-body a {
+                    color: #6f850d;
+                    font-weight: 700;
+                }
+
+                @media (max-width: 980px) {
+                    .main-grid {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+
+                @media (max-width: 720px) {
+                    .mini-nav-hidden {
+                        display: none;
+                    }
+                }
+            `}
+        </style>
+    );
+}
+
+const colors = {
+    fejuGreen: "#9bb31d",
+    fejuGreenDark: "#6f850d",
+    fejuGreenSoft: "#f4f8df",
+    deepGreen: "#004932",
+    deepGreen2: "#00613f",
+    text: "#17202a",
+    muted: "#687385",
+    border: "rgba(15, 23, 42, 0.09)",
+    page: "#f4f7f5",
+    white: "#ffffff"
+};
 
 const styles = {
     page: {
         minHeight: "100vh",
         background:
-            "linear-gradient(135deg, #f3f7f4 0%, #eef3f8 50%, #f7fafc 100%)",
+            "linear-gradient(135deg, #f6f8f3 0%, #eef4f2 48%, #f9faf7 100%)",
         fontFamily:
             "Segoe UI, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-        color: "#17202a"
+        color: colors.text
     },
-    container: {
-        maxWidth: "1180px",
+    topBar: {
+        background: colors.white,
+        borderBottom: "1px solid rgba(15, 23, 42, 0.06)"
+    },
+    topBarInner: {
+        maxWidth: "1240px",
         margin: "0 auto",
-        padding: "32px"
-    },
-    header: {
-        background: "rgba(255, 255, 255, 0.92)",
-        border: "1px solid rgba(15, 23, 42, 0.08)",
-        borderRadius: "24px",
-        padding: "28px 32px",
-        boxShadow: "0 20px 45px rgba(15, 23, 42, 0.08)",
+        padding: "18px 32px",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        gap: "24px",
+        gap: "24px"
+    },
+    miniNav: {
+        display: "flex",
+        alignItems: "center",
+        gap: "34px",
+        color: "#262b2f",
+        fontSize: "14px",
+        fontWeight: 600
+    },
+    logoWordmark: {
+        textAlign: "center",
+        minWidth: "110px",
+        lineHeight: 1
+    },
+    logoText: {
+        color: "#111111",
+        fontSize: "34px",
+        fontWeight: 400,
+        letterSpacing: "-0.08em"
+    },
+    logoSubText: {
+        color: "#8b8f95",
+        fontSize: "11px",
+        letterSpacing: "0.05em",
+        marginTop: "3px"
+    },
+    brandBand: {
+        height: "190px",
+        background: colors.fejuGreen,
+        marginBottom: "-140px"
+    },
+    container: {
+        maxWidth: "1240px",
+        margin: "0 auto",
+        padding: "0 32px 40px 32px",
+        position: "relative"
+    },
+    heroCard: {
+        background: "rgba(255, 255, 255, 0.96)",
+        border: `1px solid ${colors.border}`,
+        borderRadius: "26px",
+        padding: "30px 34px",
+        boxShadow: "0 24px 55px rgba(15, 23, 42, 0.10)",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: "28px",
         marginBottom: "24px"
+    },
+    heroLeft: {
+        flex: 1
     },
     brandRow: {
         display: "flex",
         alignItems: "center",
-        gap: "14px"
+        gap: "16px"
     },
-    logoCircle: {
-        width: "48px",
-        height: "48px",
-        borderRadius: "16px",
-        background: "linear-gradient(135deg, #00a651, #63d471)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: "26px",
-        boxShadow: "0 12px 25px rgba(0, 166, 81, 0.25)"
+    logoMark: {
+    width: "220px",
+    height: "80px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+    },
+    logoImage: {
+    width: "100%",
+    height: "100%",
+    objectFit: "contain"
+    },
+    eyebrow: {
+        color: colors.fejuGreenDark,
+        fontSize: "13px",
+        fontWeight: 800,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+        marginBottom: "4px"
     },
     title: {
         margin: 0,
-        fontSize: "32px",
-        letterSpacing: "-0.04em"
+        fontSize: "36px",
+        letterSpacing: "-0.04em",
+        color: "#111827"
     },
-    subtitle: {
-        margin: "6px 0 0 0",
-        color: "#64748b",
-        fontSize: "15px"
+    heroText: {
+        margin: "18px 0 0 0",
+        maxWidth: "720px",
+        color: "#475569",
+        fontSize: "17px",
+        lineHeight: 1.65
+    },
+    heroActions: {
+        display: "flex",
+        gap: "12px",
+        marginTop: "22px",
+        flexWrap: "wrap"
+    },
+    heroPrimaryButton: {
+        border: "none",
+        borderRadius: "999px",
+        padding: "13px 20px",
+        cursor: "pointer",
+        background:
+            "linear-gradient(135deg, #9bb31d 0%, #819714 100%)",
+        color: colors.white,
+        fontWeight: 800
+    },
+    heroSecondaryButton: {
+        border: "1px solid rgba(151, 175, 30, 0.45)",
+        background: colors.white,
+        borderRadius: "999px",
+        padding: "12px 18px",
+        cursor: "pointer",
+        color: "#334155",
+        fontWeight: 800
     },
     userPanel: {
-        textAlign: "right"
+        textAlign: "right",
+        minWidth: "260px"
     },
     userLabel: {
         fontSize: "13px",
-        color: "#64748b",
-        marginBottom: "6px"
+        color: colors.muted,
+        marginBottom: "7px"
     },
     userName: {
-        fontWeight: 700,
-        marginBottom: "10px"
+        fontWeight: 800,
+        marginBottom: "12px",
+        color: "#111827",
+        overflowWrap: "anywhere"
     },
     logoutButton: {
-        border: "1px solid #d1d5db",
-        background: "#ffffff",
+        border: "1px solid rgba(15, 23, 42, 0.13)",
+        background: colors.white,
         borderRadius: "999px",
-        padding: "8px 14px",
+        padding: "9px 16px",
         cursor: "pointer",
         color: "#334155",
-        fontWeight: 600
+        fontWeight: 700
     },
     main: {
         display: "grid",
-        gridTemplateColumns: "1fr 320px",
+        gridTemplateColumns: "minmax(0, 1fr) 360px",
         gap: "24px"
     },
     chatPanel: {
-        background: "rgba(255, 255, 255, 0.94)",
-        border: "1px solid rgba(15, 23, 42, 0.08)",
-        borderRadius: "24px",
-        boxShadow: "0 20px 45px rgba(15, 23, 42, 0.08)",
+        background: "rgba(255, 255, 255, 0.96)",
+        border: `1px solid ${colors.border}`,
+        borderRadius: "26px",
+        boxShadow: "0 24px 55px rgba(15, 23, 42, 0.08)",
         overflow: "hidden",
-        minHeight: "650px",
+        minHeight: "680px",
         display: "flex",
         flexDirection: "column"
     },
     chatHeader: {
-        padding: "20px 24px",
-        borderBottom: "1px solid rgba(15, 23, 42, 0.08)",
+        padding: "24px 26px",
+        borderBottom: `1px solid ${colors.border}`,
         display: "flex",
         justifyContent: "space-between",
-        alignItems: "center"
+        alignItems: "flex-start",
+        gap: "20px",
+        background:
+            "linear-gradient(180deg, #ffffff 0%, #fbfdf7 100%)"
+    },
+    sectionKicker: {
+        color: colors.fejuGreenDark,
+        fontSize: "12px",
+        fontWeight: 900,
+        textTransform: "uppercase",
+        letterSpacing: "0.09em",
+        marginBottom: "6px"
     },
     chatTitle: {
         margin: 0,
-        fontSize: "20px"
+        fontSize: "24px",
+        letterSpacing: "-0.03em"
     },
     chatSubtitle: {
-        margin: "4px 0 0 0",
-        color: "#64748b",
-        fontSize: "14px"
+        margin: "7px 0 0 0",
+        color: colors.muted,
+        fontSize: "14px",
+        lineHeight: 1.55
     },
     liveBadge: {
-        background: "#e8f8ef",
-        color: "#007a3d",
+        background: colors.fejuGreenSoft,
+        color: colors.fejuGreenDark,
         borderRadius: "999px",
-        padding: "8px 12px",
+        padding: "9px 13px",
         fontSize: "13px",
-        fontWeight: 700
+        fontWeight: 900,
+        display: "flex",
+        alignItems: "center",
+        whiteSpace: "nowrap",
+        gap: "8px"
+    },
+    statusDot: {
+        width: "9px",
+        height: "9px",
+        borderRadius: "999px",
+        background: colors.fejuGreen,
+        boxShadow: "0 0 0 4px rgba(155, 179, 29, 0.16)"
     },
     messagesArea: {
         flex: 1,
-        padding: "24px",
+        padding: "26px",
         overflowY: "auto",
         background:
-            "linear-gradient(180deg, #fbfdff 0%, #f8fafc 100%)"
+            "radial-gradient(circle at top left, rgba(155, 179, 29, 0.08), transparent 34%), linear-gradient(180deg, #fbfcf8 0%, #f8faf7 100%)"
     },
     messageBubble: {
         maxWidth: "78%",
-        padding: "16px 18px",
-        lineHeight: 1.55
+        padding: "17px 19px",
+        lineHeight: 1.58,
+        fontSize: "15px"
     },
     userBubble: {
-        borderRadius: "20px 20px 4px 20px",
-        background: "linear-gradient(135deg, #00a651, #23c76a)",
-        color: "#ffffff",
-        boxShadow: "0 14px 30px rgba(0, 166, 81, 0.25)"
+        borderRadius: "22px 22px 6px 22px",
+        background:
+            "linear-gradient(135deg, #8ca418 0%, #acc533 100%)",
+        color: colors.white,
+        boxShadow: "0 16px 34px rgba(136, 163, 27, 0.24)"
     },
     assistantBubble: {
-        borderRadius: "20px 20px 20px 4px",
-        background: "#ffffff",
-        color: "#17202a",
-        boxShadow: "0 12px 30px rgba(15, 23, 42, 0.08)",
-        border: "1px solid rgba(15, 23, 42, 0.08)"
+        borderRadius: "22px 22px 22px 6px",
+        background: colors.white,
+        color: colors.text,
+        boxShadow: "0 14px 34px rgba(15, 23, 42, 0.08)",
+        border: `1px solid ${colors.border}`
+    },
+    messageMeta: {
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        marginBottom: "9px"
+    },
+    smallAvatar: {
+        width: "24px",
+        height: "24px",
+        borderRadius: "8px",
+        background: colors.fejuGreenSoft,
+        color: colors.fejuGreenDark,
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "12px",
+        fontWeight: 900,
+        letterSpacing: "-0.06em"
     },
     messageLabel: {
         fontSize: "13px",
-        fontWeight: 700,
-        marginBottom: "8px",
-        opacity: 0.8
+        fontWeight: 800,
+        opacity: 0.86
     },
     loadingRow: {
         display: "flex",
@@ -629,30 +1012,32 @@ const styles = {
         marginBottom: "18px"
     },
     loadingBubble: {
-        background: "#ffffff",
-        border: "1px solid rgba(15, 23, 42, 0.08)",
-        borderRadius: "20px 20px 20px 4px",
-        padding: "16px 18px",
-        boxShadow: "0 12px 30px rgba(15, 23, 42, 0.08)"
+        background: colors.white,
+        border: `1px solid ${colors.border}`,
+        borderRadius: "22px 22px 22px 6px",
+        padding: "17px 19px",
+        boxShadow: "0 14px 34px rgba(15, 23, 42, 0.08)"
     },
     loadingText: {
         marginTop: "8px",
-        color: "#64748b"
+        color: colors.muted
     },
     inputArea: {
         padding: "20px",
-        borderTop: "1px solid rgba(15, 23, 42, 0.08)",
-        background: "#ffffff"
+        borderTop: `1px solid ${colors.border}`,
+        background: colors.white
     },
     textarea: {
         width: "100%",
         resize: "vertical",
         border: "1px solid rgba(15, 23, 42, 0.16)",
-        borderRadius: "18px",
+        borderRadius: "20px",
         padding: "16px",
         fontSize: "15px",
         fontFamily: "inherit",
         outline: "none",
+        color: colors.text,
+        background: "#ffffff",
         boxSizing: "border-box"
     },
     inputFooter: {
@@ -660,10 +1045,11 @@ const styles = {
         justifyContent: "space-between",
         alignItems: "center",
         marginTop: "14px",
-        gap: "12px"
+        gap: "12px",
+        flexWrap: "wrap"
     },
     inputHint: {
-        color: "#64748b",
+        color: colors.muted,
         fontSize: "13px"
     },
     askButton: {
@@ -671,10 +1057,11 @@ const styles = {
         borderRadius: "999px",
         padding: "12px 22px",
         cursor: "pointer",
-        background: "linear-gradient(135deg, #00a651, #23c76a)",
-        color: "#ffffff",
-        fontWeight: 800,
-        boxShadow: "0 12px 25px rgba(0, 166, 81, 0.25)"
+        background:
+            "linear-gradient(135deg, #9bb31d 0%, #819714 100%)",
+        color: colors.white,
+        fontWeight: 900,
+        boxShadow: "0 12px 25px rgba(136, 163, 27, 0.23)"
     },
     askButtonDisabled: {
         background: "#cbd5e1",
@@ -687,42 +1074,93 @@ const styles = {
         gap: "18px"
     },
     card: {
-        background: "rgba(255, 255, 255, 0.94)",
-        border: "1px solid rgba(15, 23, 42, 0.08)",
-        borderRadius: "24px",
+        background: "rgba(255, 255, 255, 0.96)",
+        border: `1px solid ${colors.border}`,
+        borderRadius: "26px",
         padding: "22px",
-        boxShadow: "0 20px 45px rgba(15, 23, 42, 0.08)"
+        boxShadow: "0 24px 55px rgba(15, 23, 42, 0.08)"
+    },
+    cardHeader: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        marginBottom: "14px"
     },
     cardTitle: {
-        marginTop: 0,
-        marginBottom: "12px"
+        margin: 0,
+        fontSize: "22px",
+        letterSpacing: "-0.03em"
     },
-    quickButton: {
+    quickGrid: {
+        display: "grid",
+        gridTemplateColumns: "1fr",
+        gap: "11px"
+    },
+    quickTile: {
         width: "100%",
         textAlign: "left",
-        border: "1px solid rgba(15, 23, 42, 0.10)",
-        background: "#ffffff",
-        borderRadius: "14px",
-        padding: "12px 14px",
-        marginBottom: "10px",
+        border: `1px solid ${colors.border}`,
+        background: colors.white,
+        borderRadius: "18px",
+        padding: "14px",
         cursor: "pointer",
-        fontWeight: 700,
-        color: "#1e293b"
+        color: "#1e293b",
+        display: "flex",
+        gap: "12px",
+        alignItems: "flex-start"
+    },
+    quickIcon: {
+        width: "34px",
+        height: "34px",
+        borderRadius: "12px",
+        background: colors.fejuGreenSoft,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0
+    },
+    quickContent: {
+        display: "flex",
+        flexDirection: "column",
+        gap: "3px"
+    },
+    quickTitle: {
+        fontSize: "14px",
+        fontWeight: 900
+    },
+    quickDescription: {
+        fontSize: "12px",
+        color: colors.muted,
+        lineHeight: 1.4
     },
     greenCard: {
-        background: "linear-gradient(135deg, #102a1f, #005c35)",
-        color: "#ffffff",
-        borderRadius: "24px",
-        padding: "22px",
-        boxShadow: "0 20px 45px rgba(0, 80, 45, 0.22)"
+        background:
+            "linear-gradient(135deg, #003d2b 0%, #00613f 58%, #7f9915 145%)",
+        color: colors.white,
+        borderRadius: "26px",
+        padding: "24px",
+        boxShadow: "0 24px 55px rgba(0, 73, 50, 0.24)"
+    },
+    greenCardEyebrow: {
+        color: "#dbeaa2",
+        fontSize: "12px",
+        fontWeight: 900,
+        textTransform: "uppercase",
+        letterSpacing: "0.08em",
+        marginBottom: "8px"
     },
     greenCardTitle: {
-        marginTop: 0
+        marginTop: 0,
+        marginBottom: "14px",
+        fontSize: "23px",
+        letterSpacing: "-0.04em",
+        lineHeight: 1.18
     },
     helpList: {
         paddingLeft: "18px",
-        lineHeight: 1.8,
-        marginBottom: 0
+        lineHeight: 1.85,
+        marginBottom: 0,
+        color: "#f6ffe0"
     },
     loginPage: {
         minHeight: "100vh",
@@ -730,42 +1168,46 @@ const styles = {
         justifyContent: "center",
         alignItems: "center",
         background:
-            "linear-gradient(135deg, #f3f7f4 0%, #eef3f8 50%, #f7fafc 100%)",
+            "linear-gradient(135deg, #f6f8f3 0%, #eef4f2 48%, #f9faf7 100%)",
         fontFamily:
-            "Segoe UI, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+            "Segoe UI, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+        padding: "24px"
     },
     loginCard: {
-        background: "#ffffff",
-        padding: "42px",
-        borderRadius: "24px",
-        boxShadow: "0 20px 45px rgba(15, 23, 42, 0.12)",
+        background: colors.white,
+        padding: "44px",
+        borderRadius: "28px",
+        boxShadow: "0 24px 55px rgba(15, 23, 42, 0.12)",
         textAlign: "center",
-        width: "420px",
-        border: "1px solid rgba(15, 23, 42, 0.08)"
+        width: "440px",
+        maxWidth: "100%",
+        border: `1px solid ${colors.border}`
     },
     loginTitle: {
-        margin: "18px 0 8px 0",
-        fontSize: "30px"
+        margin: "20px 0 8px 0",
+        fontSize: "32px",
+        letterSpacing: "-0.04em"
     },
     loginSubtitle: {
-        color: "#64748b",
+        color: colors.muted,
         fontSize: "15px",
-        lineHeight: 1.6,
+        lineHeight: 1.65,
         marginBottom: "24px"
     },
     loginButton: {
-        background: "linear-gradient(135deg, #00a651, #23c76a)",
-        color: "#ffffff",
+        background:
+            "linear-gradient(135deg, #9bb31d 0%, #819714 100%)",
+        color: colors.white,
         border: "none",
         borderRadius: "999px",
         padding: "13px 24px",
         cursor: "pointer",
-        fontWeight: 800,
-        boxShadow: "0 12px 25px rgba(0, 166, 81, 0.25)"
+        fontWeight: 900,
+        boxShadow: "0 12px 25px rgba(136, 163, 27, 0.24)"
     },
     securityNote: {
         marginTop: "18px",
-        color: "#64748b",
+        color: colors.muted,
         fontSize: "13px"
     }
 };
