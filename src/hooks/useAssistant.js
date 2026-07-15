@@ -61,7 +61,7 @@ export function useAssistant({ acquireApiToken, user }) {
             ]);
         } catch (requestError) {
             const message = requestError.name === "AbortError"
-                ? "De aanvraag duurde te lang of is geannuleerd. Probeer het opnieuw."
+                ? "De analyse duurde langer dan de webrequest toestaat. Probeer een specifiekere vraag of gebruik een Data Lake-analyse."
                 : requestError.message;
 
             setError(message);

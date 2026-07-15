@@ -3,7 +3,7 @@ export const appConfig = {
     apiScope: import.meta.env.VITE_API_SCOPE || "",
     tenantId: import.meta.env.VITE_ENTRA_TENANT_ID || "d8e80c75-af0c-4d17-a7a5-4849d64af1c5",
     clientId: import.meta.env.VITE_ENTRA_CLIENT_ID || "59c65b43-60e0-4c9f-87f9-4a005a51fa54",
-    requestTimeoutMs: Number(import.meta.env.VITE_REQUEST_TIMEOUT_MS || 60000),
+    requestTimeoutMs: Number(import.meta.env.VITE_REQUEST_TIMEOUT_MS || 40000),
     conversationLimit: Number(import.meta.env.VITE_CONVERSATION_LIMIT || 8),
     appName: "FéjuAI"
 };

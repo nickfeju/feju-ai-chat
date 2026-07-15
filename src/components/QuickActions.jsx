@@ -8,7 +8,9 @@ const actions = [
     { icon: "chart", mode: "analytics", title: "Tickettrend", description: "Ontwikkeling per maand", prompt: "Laat de tickettrend per maand zien" },
     { icon: "sparkles", mode: "analytics", title: "Stijgende klanten", description: "Detecteer opvallende pieken", prompt: "Welke klanten hebben een opvallende ticketstijging?" },
     { icon: "database", mode: "analytics", title: "Top queues", description: "Verdeling vanuit Data Lake", prompt: "Welke queues kregen de meeste tickets?" },
-    { icon: "live", mode: "combined", title: "Klantontwikkeling", description: "Actueel versus historisch", prompt: "Geef de actuele situatie van Hemubo en vergelijk deze met de afgelopen maanden" }
+    { icon: "live", mode: "combined", title: "Klantontwikkeling", description: "Actueel versus historisch", prompt: "Geef de actuele situatie van Hemubo en vergelijk deze met de afgelopen maanden" },
+    { icon: "chart", mode: "analytics", title: "Omzet & marge", description: "Financiële analytics", prompt: "Geef een algemeen overzicht van omzet, winst en brutomarge" },
+    { icon: "ticket", mode: "auto", title: "Ticket intake", description: "Maak een Autotask-ticket", prompt: "Ik wil een nieuw ticket aanmaken" }
 ];
 
 export function QuickActions({ onSelect }) {
