@@ -18,9 +18,12 @@ jobs:
 
     env:
       VITE_FUNCTION_URL: ${{ secrets.VITE_FUNCTION_URL }}
+      VITE_API_SCOPE: ${{ secrets.VITE_API_SCOPE }}
+      VITE_ENTRA_CLIENT_ID: ${{ secrets.VITE_ENTRA_CLIENT_ID }}
+      VITE_ENTRA_TENANT_ID: ${{ secrets.VITE_ENTRA_TENANT_ID }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
           lfs: false

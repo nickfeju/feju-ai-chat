@@ -1,8 +1,9 @@
+import { appConfig } from "../config";
+
 export const msalConfig = {
     auth: {
-        clientId: "59c65b43-60e0-4c9f-87f9-4a005a51fa54",
-        authority:
-            "https://login.microsoftonline.com/d8e80c75-af0c-4d17-a7a5-4849d64af1c5",
+        clientId: appConfig.clientId,
+        authority: `https://login.microsoftonline.com/${appConfig.tenantId}`,
         redirectUri: window.location.origin,
         postLogoutRedirectUri: window.location.origin,
         navigateToLoginRequestUrl: false
@@ -14,5 +15,5 @@ export const msalConfig = {
 };
 
 export const loginRequest = {
-    scopes: ["User.Read"]
+    scopes: appConfig.apiScope ? [appConfig.apiScope] : ["User.Read"]
 };
