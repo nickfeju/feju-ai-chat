@@ -26,7 +26,14 @@ export function Icon({ name, size = 20 }) {
         sparkles: <><path d="m12 3-1.9 4.1L6 9l4.1 1.9L12 15l1.9-4.1L18 9l-4.1-1.9Z"/><path d="M5 3v4M3 5h4M19 17v4M17 19h4"/></>,
         live: <><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49M7.76 16.24a6 6 0 0 1 0-8.49"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/></>,
         stop: <rect x="5" y="5" width="14" height="14" rx="2"/>,
-        chevron: <path d="m9 18 6-6-6-6"/>
+        chevron: <path d="m9 18 6-6-6-6"/>,
+        layers: <><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></>,
+        contract: <><path d="M8 2h8l4 4v16H4V2h4Z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h6"/></>,
+        services: <><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="5"/><path d="m5.6 5.6 2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></>,
+        alert: <><path d="M10.3 2.9 1.8 17a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 2.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></>,
+        ranking: <><path d="M8 21V10H3v11M21 21V3h-5v18M14 21V6H9v15"/></>,
+        issues: <><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></>,
+        money: <><circle cx="12" cy="12" r="9"/><path d="M16 8.5c-.7-.8-1.8-1.2-3.2-1.2-1.8 0-3 .8-3 2s1 1.8 3 2.2 3 1 3 2.3-1.2 2.2-3 2.2c-1.5 0-2.8-.5-3.6-1.4M12.5 5.5v13"/></>
     };
 
     return <svg {...common}>{paths[name] || paths.sparkles}</svg>;

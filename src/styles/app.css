@@ -80,3 +80,41 @@
     font-size: 0.75rem;
     font-weight: 700;
 }
+
+/* FéjuAI Web V2 */
+.workspace { grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); }
+.workspace__sidebar { align-content: start; }
+.welcome-block h1 { max-width: 11ch; }
+.chat-panel__header h2 { letter-spacing: -.025em; }
+.quick-actions-card { overflow: hidden; }
+.quick-action-tabs { display: flex; gap: 6px; overflow-x: auto; padding: 0 0 10px; scrollbar-width: none; }
+.quick-action-tabs::-webkit-scrollbar { display: none; }
+.quick-action-tab { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: var(--surface-soft); color: var(--ink-600); padding: 7px 9px; border-radius: 999px; white-space: nowrap; font-size: 9px; font-weight: 750; }
+.quick-action-tab.is-active { background: var(--green-900); border-color: var(--green-900); color: white; }
+.quick-action { grid-template-columns: 38px minmax(0,1fr) auto; }
+.quick-action__mode { font-size: 8px; font-weight: 800; color: var(--green-800); background: #edf7f2; border: 1px solid #d7e9df; border-radius: 999px; padding: 3px 6px; white-space: nowrap; }
+.quick-action:hover { transform: translateY(-1px); border-color: #bfd2c7; box-shadow: 0 8px 18px rgba(15,42,30,.06); }
+.mode-selector__item { display: inline-flex; align-items: center; gap: 5px; padding: 7px 10px; }
+.composer__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.composer__mode-help { color: var(--ink-500); font-size: 9px; }
+.composer__input-wrap { position: relative; }
+.composer__shortcut { position: absolute; right: 12px; bottom: 10px; font-size: 8px; color: var(--ink-500); background: var(--surface-muted); padding: 3px 6px; border-radius: 6px; }
+.welcome-dashboard { margin: 0 0 28px 43px; padding: 22px; border: 1px solid var(--border); border-radius: 20px; background: linear-gradient(145deg, rgba(255,255,255,.97), rgba(243,247,236,.96)); box-shadow: var(--shadow-sm); }
+.welcome-dashboard__intro h3 { margin: 6px 0 18px; font-size: 19px; }
+.starter-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+.starter-card { display: grid; grid-template-columns: 42px minmax(0,1fr) 18px; align-items: center; gap: 11px; min-height: 96px; padding: 14px; border: 1px solid var(--border); border-radius: 14px; background: rgba(255,255,255,.82); text-align: left; color: var(--ink-950); transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+.starter-card:hover { transform: translateY(-2px); border-color: #b9d0c3; box-shadow: 0 12px 22px rgba(15,42,30,.07); }
+.starter-card__icon { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 12px; color: var(--green-800); background: #edf4ef; }
+.starter-card strong, .starter-card small { display: block; }
+.starter-card strong { margin-bottom: 5px; font-size: 12px; }
+.starter-card small { color: var(--ink-500); line-height: 1.45; font-size: 9px; }
+.metric-grid { grid-template-columns: repeat(auto-fit,minmax(145px,1fr)); }
+.metric-card { background: linear-gradient(145deg,#fff,#f4f7f3); }
+.metric-card strong { color: var(--green-900); }
+.presentation-block h4 { margin: 15px 0 9px; font-size: 12px; }
+.bar-row { grid-template-columns: 22px minmax(105px, 180px) minmax(90px,1fr) minmax(72px,auto); }
+.bar-row__rank { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 7px; background: var(--surface-muted); color: var(--ink-600); font-weight: 800; }
+.bar-row__label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-row strong { text-align: right; font-size: 9px; }
+@media (max-width: 980px) { .workspace { grid-template-columns: 1fr; } .welcome-block h1 { max-width: none; } }
+@media (max-width: 680px) { .starter-grid { grid-template-columns: 1fr; } .welcome-dashboard { margin-left: 0; padding: 14px; } .composer__mode-help { display: none; } .quick-action__mode { display: none; } .bar-row { grid-template-columns: 20px minmax(80px,120px) 1fr; } .bar-row strong { grid-column: 2 / -1; text-align: left; } }

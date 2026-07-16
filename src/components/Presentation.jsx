@@ -12,19 +12,23 @@ function MetricList({ items }) {
     );
 }
 
-function BarList({ items }) {
-    const max = Math.max(...items.map((item) => Number(item.value) || 0), 1);
+function BarList({ items, title }) {
+    const max = Math.max(...items.map((item) => Math.abs(Number(item.value) || 0)), 1);
     return (
-        <div className="bar-list">
-            {items.map((item) => (
-                <div className="bar-row" key={item.label}>
-                    <span>{item.label}</span>
-                    <div className="bar-track">
-                        <i style={{ width: `${((Number(item.value) || 0) / max) * 100}%` }} />
+        <div className="presentation-block">
+            {title && <h4>{title}</h4>}
+            <div className="bar-list">
+                {items.map((item, index) => (
+                    <div className="bar-row" key={`${item.label}-${index}`}>
+                        <span className="bar-row__rank">{index + 1}</span>
+                        <span className="bar-row__label" title={item.label}>{item.label}</span>
+                        <div className="bar-track">
+                            <i style={{ width: `${(Math.abs(Number(item.value) || 0) / max) * 100}%` }} />
+                        </div>
+                        <strong>{item.displayValue || item.value}</strong>
                     </div>
-                    <strong>{item.displayValue || item.value}</strong>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
     );
 }
@@ -52,7 +56,7 @@ export function Presentation({ presentation }) {
     if (!items.length) return null;
 
     if (presentation.type === "metric-list") return <MetricList items={items} />;
-    if (["bars", "bar-list"].includes(presentation.type)) return <BarList items={items} />;
+    if (["bars", "bar-list"].includes(presentation.type)) return <BarList items={items} title={presentation.title} />;
     if (presentation.type === "ticket-list") return <TicketList items={items} />;
     return null;
 }

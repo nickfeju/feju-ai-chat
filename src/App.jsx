@@ -12,6 +12,7 @@ import { DataStatus } from "./components/DataStatus";
 import { ChatMessage } from "./components/ChatMessage";
 import { ChatComposer } from "./components/ChatComposer";
 import { LoginScreen } from "./components/LoginScreen";
+import { WelcomeDashboard } from "./components/WelcomeDashboard";
 import "./styles/app.css";
 
 export default function App() {
@@ -84,7 +85,7 @@ export default function App() {
                         <h1>{displayName}, wat wil je weten?</h1>
                         <p>Gebruik live Autotask-data, historische Data Lake-analytics of combineer beide.</p>
                     </div>
-                    <QuickActions onSelect={selectQuickAction} />
+                    <QuickActions onSelect={selectQuickAction} activeMode={mode} />
                     <DataStatus />
                 </aside>
 
@@ -92,12 +93,15 @@ export default function App() {
                     <header className="chat-panel__header">
                         <div>
                             <span className="eyebrow">Assistant</span>
-                            <h2>Klantinzicht zonder zoekwerk</h2>
+                            <h2>Van vraag naar inzicht en actie</h2>
                         </div>
                         <span className="connection-badge"><i /> Autotask + Data Lake</span>
                     </header>
 
                     <div className="chat-panel__messages">
+                        {assistant.messages.length === 1 && (
+                            <WelcomeDashboard onSelect={selectQuickAction} />
+                        )}
                         {assistant.messages.map((message, index) => (
                             <ChatMessage
                                 key={message.id}
