@@ -56,7 +56,9 @@ export function useAssistant({ acquireApiToken, user }) {
                     mode: result.mode,
                     sources: result.sources,
                     dataFreshness: result.dataFreshness,
-                    presentation: result.presentation
+                    presentation: result.presentation,
+                    data: result.data,
+                    raw: result.raw
                 }
             ]);
         } catch (requestError) {

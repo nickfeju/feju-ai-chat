@@ -2,8 +2,11 @@ import ReactMarkdown from "react-markdown";
 import { Icon } from "./Icons";
 import { SourceBadges } from "./SourceBadges";
 import { Presentation } from "./Presentation";
+import { ExecutiveCopilotPresentation } from "./ExecutiveCopilotPresentation";
+import { DecisionPresentation } from "./DecisionPresentation";
+import { ManagementActions } from "./ManagementActions";
 
-export function ChatMessage({ message, onRetry }) {
+export function ChatMessage({ message, onRetry, onAction }) {
     const isUser = message.role === "user";
 
     const copyMessage = async () => {
@@ -18,6 +21,9 @@ export function ChatMessage({ message, onRetry }) {
                 <div className="message__bubble">
                     {isUser ? <p>{message.content}</p> : <div className="markdown-body"><ReactMarkdown>{message.content}</ReactMarkdown></div>}
                     {!isUser && <Presentation presentation={message.presentation} />}
+                    {!isUser && <ExecutiveCopilotPresentation data={message.data || message.raw} />}
+                    {!isUser && <DecisionPresentation data={message.data || message.raw} />}
+                    {!isUser && <ManagementActions message={message} onSelect={onAction} />}
                 </div>
                 {!isUser && (
                     <div className="message__footer">

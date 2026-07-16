@@ -13,6 +13,7 @@ import { ChatMessage } from "./components/ChatMessage";
 import { ChatComposer } from "./components/ChatComposer";
 import { LoginScreen } from "./components/LoginScreen";
 import { WelcomeDashboard } from "./components/WelcomeDashboard";
+import { ExecutiveStart } from "./components/ExecutiveStart";
 import "./styles/app.css";
 
 export default function App() {
@@ -100,13 +101,14 @@ export default function App() {
 
                     <div className="chat-panel__messages">
                         {assistant.messages.length === 1 && (
-                            <WelcomeDashboard onSelect={selectQuickAction} />
+                            <><ExecutiveStart onSelect={selectQuickAction} /><WelcomeDashboard onSelect={selectQuickAction} /></>
                         )}
                         {assistant.messages.map((message, index) => (
                             <ChatMessage
                                 key={message.id}
                                 message={message}
                                 onRetry={message.role === "assistant" && index === assistant.messages.length - 1 ? assistant.retryLast : null}
+                                onAction={selectQuickAction}
                             />
                         ))}
 

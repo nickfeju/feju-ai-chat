@@ -69,6 +69,7 @@ export async function askAssistant({
         sources: Array.isArray(body.sources) ? body.sources : [],
         dataFreshness: body.dataFreshness || null,
         presentation: body.presentation || null,
+        data: body.data || null,
         raw: body
     };
 }
